@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Piano Tracker</string>
+    <string-array name="difficulty_array">
+        <item>Very Easy</item>
+        <item>Easy</item>
+        <item>Medium</item>
+        <item>Hard</item>
+        <item>Very Hard</item>
+    </string-array>
+    <string-array name="state_array">
+        <item>Not Learned</item>
+        <item>Learning</item>
+        <item>Need To Re-learn</item>
+        <item>Learned</item>
+    </string-array>
 </resources>

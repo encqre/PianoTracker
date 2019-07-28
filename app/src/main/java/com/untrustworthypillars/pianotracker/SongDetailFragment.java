@@ -1,5 +1,6 @@
 package com.untrustworthypillars.pianotracker;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,6 +31,9 @@ import com.untrustworthypillars.pianotracker.formatting.DateFormatting;
 public class SongDetailFragment extends Fragment {
 
     private static final String ARG_SONG_ID = "song_id";
+
+    private static final int REQUEST_ADD_SONG = 0;
+    private static final int REQUEST_EDIT_SONG = 1;
 
     public static final String[] SONG_DIFFICULTIES = {"Very Easy", "Easy", "Medium", "Hard", "Very Hard"};
     public static final String[] SONG_STATES = {"Not Learned", "Learning", "Need To Re-learn", "Learned"};
@@ -188,6 +193,35 @@ public class SongDetailFragment extends Fragment {
         MenuItem addItem = menu.findItem(R.id.pager_toolbar_add);
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.pager_toolbar_add:
+                //Launching AddSongDialog
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                AddSongDialog dialog = AddSongDialog.newInstance();
+                dialog.setTargetFragment(this, REQUEST_ADD_SONG);
+                dialog.show(fm, "AddSongDialog");
+                return true;
+            case R.id.pager_toolbar_edit:
+//                FragmentManager fm = getActivity().getSupportFragmentManager();
+                //TODO
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ADD_SONG) {
+            //nothing probably
+        } else if (requestCode == REQUEST_EDIT_SONG) {
+            //TODO - need to refresh the song data
+        }
+    }
+
 
     private void updateSong() {
         SongManager.get(getActivity()).updateSong(mSong);
