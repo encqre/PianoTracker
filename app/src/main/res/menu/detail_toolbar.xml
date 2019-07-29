@@ -14,4 +14,9 @@
         android:iconTint="@color/white"
         app:showAsAction="never"
         />
+    <item
+        android:id="@+id/pager_toolbar_delete"
+        android:title="Delete"
+        app:showAsAction="never"
+        />
 </menu>

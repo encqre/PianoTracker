@@ -3,11 +3,13 @@ package com.untrustworthypillars.pianotracker;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -181,6 +183,7 @@ public class SongDetailFragment extends Fragment {
         inflater.inflate(R.menu.detail_toolbar, menu);
         MenuItem editItem = menu.findItem(R.id.pager_toolbar_edit);
         MenuItem addItem = menu.findItem(R.id.pager_toolbar_add);
+        MenuItem deleteItem = menu.findItem(R.id.pager_toolbar_delete);
 
     }
 
@@ -199,6 +202,22 @@ public class SongDetailFragment extends Fragment {
                 EditSongDialog editDialog = EditSongDialog.newInstance(this.mSong.getSongId());
                 editDialog.setTargetFragment(this, REQUEST_EDIT_SONG);
                 editDialog.show(fmg, "EditSongDialog");
+            case R.id.pager_toolbar_delete:
+                AlertDialog deleteDialog = new AlertDialog.Builder(getActivity()).setTitle("Delete this?")
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                  SongManager.get(getActivity()).deleteSong(mSong);
+                            }
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //
+                            }
+                        })
+                        .create();
+                deleteDialog.show();
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -236,7 +255,7 @@ public class SongDetailFragment extends Fragment {
             mTimePlayed.setText(String.valueOf(hours) + "h " + String.valueOf(minutes) + "min " + String.valueOf(seconds) + "s");
         }
         mCountPlayed.setText(String.valueOf(mSong.getCountPlayed()));
-        
+
     }
 
     public static void watchYoutubeVideo(Context context, String id){
