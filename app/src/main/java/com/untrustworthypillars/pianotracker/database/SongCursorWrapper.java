@@ -2,6 +2,7 @@ package com.untrustworthypillars.pianotracker.database;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
+import android.util.Log;
 
 import com.untrustworthypillars.pianotracker.Song;
 import com.untrustworthypillars.pianotracker.database.DbSchema.SongTable;

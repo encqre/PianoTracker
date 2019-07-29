@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Date;
 import java.util.UUID;
 
 import com.untrustworthypillars.pianotracker.formatting.DateFormatting;
@@ -39,6 +40,7 @@ public class SongDetailFragment extends Fragment {
     public static final String[] SONG_STATES = {"Not Learned", "Learning", "Need To Re-learn", "Learned"};
 
     private Song mSong;
+    private UUID mSongId;
     private Callbacks mCallbacks;
     private TextView mTitle;
     private Button mVideoLink;
@@ -52,7 +54,6 @@ public class SongDetailFragment extends Fragment {
     private TextView mCountPlayed;
     private FloatingActionButton mAddCountFAB;
     private FloatingActionButton mRecordFAB;
-    private Drawable test;
 
     //Required interface for hosting activities
     public interface Callbacks {
@@ -78,14 +79,14 @@ public class SongDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        UUID songId = (UUID) getArguments().getSerializable(ARG_SONG_ID);
-        mSong = SongManager.get(getActivity()).getSong(songId);
+        mSongId = (UUID) getArguments().getSerializable(ARG_SONG_ID);
+        mSong = SongManager.get(getActivity()).getSong(mSongId);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        SongManager.get(getActivity()).updateSong(mSong);
+//        SongManager.get(getActivity()).updateSong(mSong);
     }
 
 
@@ -102,7 +103,6 @@ public class SongDetailFragment extends Fragment {
 
 
         mTitle = (TextView) v.findViewById(R.id.detail_title);
-        mTitle.setText(mSong.getTitle());
 
         mVideoLink = (Button) v.findViewById(R.id.detail_video_button);
         mVideoLink.setOnClickListener(new View.OnClickListener() {
@@ -113,19 +113,17 @@ public class SongDetailFragment extends Fragment {
         });
 
         mDifficulty = (TextView) v.findViewById(R.id.detail_difficulty);
-        mDifficulty.setText("Difficulty: " + SONG_DIFFICULTIES[mSong.getDifficulty()]);
-
         mState = (TextView) v.findViewById(R.id.detail_state);
-        mState.setText("Learning state: " + SONG_STATES[mSong.getState()]);
-
         mLastPlayed = (TextView) v.findViewById(R.id.detail_last_played);
-        mLastPlayed.setText("Last played: " + DateFormatting.dateDeltaToNow(mSong.getLastPlayed()));
 
         mDecreaseScore = (Button) v.findViewById(R.id.detail_score_button_sub);
         mDecreaseScore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                int newValue = Integer.valueOf(mScore.getText().toString()) - 1;
+                mScore.setText(String.valueOf(newValue));
+                mSong.setScore(newValue);
+                SongManager.get(getActivity()).updateSong(mSong);
             }
         });
 
@@ -133,44 +131,35 @@ public class SongDetailFragment extends Fragment {
         mIncreaseScore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                int newValue = Integer.valueOf(mScore.getText().toString()) + 1;
+                mScore.setText(String.valueOf(newValue));
+                mSong.setScore(newValue);
+                SongManager.get(getActivity()).updateSong(mSong);
             }
         });
 
         mScore = (EditText) v.findViewById(R.id.detail_score);
-        mScore.setText(String.valueOf(mSong.getScore()));
-
         mTimePlayed = (TextView) v.findViewById(R.id.detail_time);
-        if (mSong.getSecondsPlayed() <= 59) {
-            mTimePlayed.setText(String.valueOf(mSong.getSecondsPlayed()) + "s");
-        } else if (mSong.getSecondsPlayed() <= 3599) {
-            long minutes = (mSong.getSecondsPlayed() / 60);
-            long seconds = mSong.getSecondsPlayed() % 60;
-            mTimePlayed.setText(String.valueOf(minutes) + "min " + String.valueOf(seconds) + "s");
-        } else {
-            long hours = (mSong.getSecondsPlayed()/3600);
-            long minutes = (mSong.getSecondsPlayed() % 3600) / 60;
-            long seconds = (mSong.getSecondsPlayed() % 3600) % 60;
-            mTimePlayed.setText(String.valueOf(hours) + "h " + String.valueOf(minutes) + "min " + String.valueOf(seconds) + "s");
-        }
-
         mCountPlayed = (TextView) v.findViewById(R.id.detail_count);
-        mCountPlayed.setText(String.valueOf(mSong.getCountPlayed()));
 
         mAddCountFAB = (FloatingActionButton) v.findViewById(R.id.detail_fab_add_count);
         mAddCountFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
+                int newCount = Integer.valueOf(mCountPlayed.getText().toString()) + 1;
+                mCountPlayed.setText(String.valueOf(newCount));
+                mLastPlayed.setText("Last played: " + DateFormatting.dateDeltaToNow(new Date()));
+                mSong.setCountPlayed(newCount);
+                mSong.setLastPlayed(new Date());
+                SongManager.get(getActivity()).updateSong(mSong);
             }
         });
 
         mRecordFAB = (FloatingActionButton) v.findViewById(R.id.detail_fab_record);
-        test = mRecordFAB.getDrawable();
         mRecordFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("GOOD SHIT", String.valueOf(mRecordFAB.getCompatElevation()));
+                //TODO
                 if (mRecordFAB.getCompatElevation() == 18f) {
                     mRecordFAB.setImageDrawable(getResources().getDrawable(R.drawable.stop_red_square, getContext().getTheme()));
                     mRecordFAB.setCompatElevation(19f);
@@ -178,9 +167,10 @@ public class SongDetailFragment extends Fragment {
                     mRecordFAB.setImageDrawable(getResources().getDrawable(R.drawable.play_sign, getContext().getTheme()));
                     mRecordFAB.setCompatElevation(18f);
                 }
-
             }
         });
+
+        updateUI();
 
         return v;
     }
@@ -205,8 +195,10 @@ public class SongDetailFragment extends Fragment {
                 dialog.show(fm, "AddSongDialog");
                 return true;
             case R.id.pager_toolbar_edit:
-//                FragmentManager fm = getActivity().getSupportFragmentManager();
-                //TODO
+                FragmentManager fmg = getActivity().getSupportFragmentManager();
+                EditSongDialog editDialog = EditSongDialog.newInstance(this.mSong.getSongId());
+                editDialog.setTargetFragment(this, REQUEST_EDIT_SONG);
+                editDialog.show(fmg, "EditSongDialog");
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -218,14 +210,33 @@ public class SongDetailFragment extends Fragment {
         if (requestCode == REQUEST_ADD_SONG) {
             //nothing probably
         } else if (requestCode == REQUEST_EDIT_SONG) {
-            //TODO - need to refresh the song data
+            updateUI();
         }
     }
 
 
-    private void updateSong() {
-        SongManager.get(getActivity()).updateSong(mSong);
-        mCallbacks.onSongUpdated(mSong);
+    private void updateUI() {
+        UUID id = mSong.getSongId();
+        mSong = SongManager.get(getActivity()).getSong(id);
+        mTitle.setText(mSong.getTitle());
+        mDifficulty.setText("Difficulty: " + SONG_DIFFICULTIES[mSong.getDifficulty()]);
+        mState.setText("Learning state: " + SONG_STATES[mSong.getState()]);
+        mLastPlayed.setText("Last played: " + DateFormatting.dateDeltaToNow(mSong.getLastPlayed()));
+        mScore.setText(String.valueOf(mSong.getScore()));
+        if (mSong.getSecondsPlayed() <= 59) {
+            mTimePlayed.setText(String.valueOf(mSong.getSecondsPlayed()) + "s");
+        } else if (mSong.getSecondsPlayed() <= 3599) {
+            long minutes = (mSong.getSecondsPlayed() / 60);
+            long seconds = mSong.getSecondsPlayed() % 60;
+            mTimePlayed.setText(String.valueOf(minutes) + "min " + String.valueOf(seconds) + "s");
+        } else {
+            long hours = (mSong.getSecondsPlayed()/3600);
+            long minutes = (mSong.getSecondsPlayed() % 3600) / 60;
+            long seconds = (mSong.getSecondsPlayed() % 3600) % 60;
+            mTimePlayed.setText(String.valueOf(hours) + "h " + String.valueOf(minutes) + "min " + String.valueOf(seconds) + "s");
+        }
+        mCountPlayed.setText(String.valueOf(mSong.getCountPlayed()));
+        
     }
 
     public static void watchYoutubeVideo(Context context, String id){

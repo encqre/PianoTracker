@@ -43,7 +43,7 @@
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="88" />
+        tools:text="10" />
 
     <ProgressBar
         android:id="@+id/song_progress"
@@ -54,7 +54,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
         android:max="100"
-        android:progress="100"
+        android:progress="9"
         android:progressDrawable="@drawable/progress_bar_circle"
         android:progressTint="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"

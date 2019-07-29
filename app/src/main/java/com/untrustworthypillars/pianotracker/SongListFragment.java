@@ -69,10 +69,10 @@ public class SongListFragment extends Fragment {
             mScore.setText(String.valueOf(mSong.getScore()));
             ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) mScore.getLayoutParams(); // will change left margin of score text depending on digits
             if (mSong.getScore() == 100) {
-                params.leftMargin = 7;
+                params.leftMargin = 22;
                 mScore.setLayoutParams(params);
             } else if (mSong.getScore() < 10) {
-                params.leftMargin = 19;
+                params.leftMargin = 56;
                 mScore.setLayoutParams(params);
             }
             mInfo.setText("Last played: " + DateFormatting.dateToMonthNameAndDay(mSong.getLastPlayed()));
