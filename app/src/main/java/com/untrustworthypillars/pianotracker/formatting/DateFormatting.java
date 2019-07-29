@@ -29,7 +29,7 @@ public class DateFormatting {
         int dayDiff = period.getDays();
 
         if (dayDiff == 0) {
-            deltaString = "today (" + DateFormat.format("MMM d", date).toString() + ")";
+            deltaString = "Today (" + DateFormat.format("MMM d", date).toString() + ")";
         } else {
             deltaString = dayDiff + " days ago (" + DateFormat.format("MMM d", date).toString() + ")";
         }

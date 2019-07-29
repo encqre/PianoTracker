@@ -5,6 +5,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +14,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,6 +34,9 @@ import java.util.Date;
 import java.util.UUID;
 
 import com.untrustworthypillars.pianotracker.formatting.DateFormatting;
+import com.untrustworthypillars.pianotracker.formatting.ColorFormatting;
+
+import org.w3c.dom.Text;
 
 public class SongDetailFragment extends Fragment {
 
@@ -238,21 +245,41 @@ public class SongDetailFragment extends Fragment {
         UUID id = mSong.getSongId();
         mSong = SongManager.get(getActivity()).getSong(id);
         mTitle.setText(mSong.getTitle());
-        mDifficulty.setText("Difficulty: " + SONG_DIFFICULTIES[mSong.getDifficulty()]);
-        mState.setText("Learning state: " + SONG_STATES[mSong.getState()]);
-        mLastPlayed.setText("Last played: " + DateFormatting.dateDeltaToNow(mSong.getLastPlayed()));
+
+
+        //Spannable allows to color only certain part of Text/Textview
+
+        String difText1 = "Difficulty: ";
+        String difText2 = SONG_DIFFICULTIES[mSong.getDifficulty()];
+        Spannable difSpannable = new SpannableString(difText1 + difText2);
+        difSpannable.setSpan(new ForegroundColorSpan(ColorFormatting.getDifficultyColor(mSong.getDifficulty(), getContext())), difText1.length(), (difText1 + difText2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        mDifficulty.setText(difSpannable, TextView.BufferType.SPANNABLE);
+
+        String stateText1 = "Learning state: ";
+        String stateText2 = SONG_STATES[mSong.getState()];
+        Spannable stateSpannable = new SpannableString(stateText1 + stateText2);
+        stateSpannable.setSpan(new ForegroundColorSpan(ColorFormatting.getStateColor(mSong.getState(), getContext())), stateText1.length(), (stateText1 + stateText2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        mState.setText(stateSpannable, TextView.BufferType.SPANNABLE);
+
+        String lpText1 = "Last played: ";
+        String lpText2 = DateFormatting.dateDeltaToNow(mSong.getLastPlayed());
+        Spannable lpSpannable = new SpannableString(lpText1 + lpText2);
+        int lpColor = getResources().getColor(R.color.white, getContext().getTheme());
+        lpSpannable.setSpan(new ForegroundColorSpan(lpColor), lpText1.length(), (lpText1 + lpText2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        mLastPlayed.setText(lpSpannable, TextView.BufferType.SPANNABLE);
+
         mScore.setText(String.valueOf(mSong.getScore()));
         if (mSong.getSecondsPlayed() <= 59) {
-            mTimePlayed.setText(String.valueOf(mSong.getSecondsPlayed()) + "s");
+            mTimePlayed.setText(String.valueOf(mSong.getSecondsPlayed()) + " s");
         } else if (mSong.getSecondsPlayed() <= 3599) {
             long minutes = (mSong.getSecondsPlayed() / 60);
             long seconds = mSong.getSecondsPlayed() % 60;
-            mTimePlayed.setText(String.valueOf(minutes) + "min " + String.valueOf(seconds) + "s");
+            mTimePlayed.setText(String.valueOf(minutes) + " min " + String.valueOf(seconds) + " s");
         } else {
             long hours = (mSong.getSecondsPlayed()/3600);
             long minutes = (mSong.getSecondsPlayed() % 3600) / 60;
             long seconds = (mSong.getSecondsPlayed() % 3600) % 60;
-            mTimePlayed.setText(String.valueOf(hours) + "h " + String.valueOf(minutes) + "min " + String.valueOf(seconds) + "s");
+            mTimePlayed.setText(String.valueOf(hours) + " h " + String.valueOf(minutes) + " min " + String.valueOf(seconds) + " s");
         }
         mCountPlayed.setText(String.valueOf(mSong.getCountPlayed()));
 

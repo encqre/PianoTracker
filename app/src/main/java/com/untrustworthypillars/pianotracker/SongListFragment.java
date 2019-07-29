@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.untrustworthypillars.pianotracker.formatting.DateFormatting;
+import com.untrustworthypillars.pianotracker.formatting.ColorFormatting;
 import java.util.List;
 
 public class SongListFragment extends Fragment {
@@ -76,41 +77,13 @@ public class SongListFragment extends Fragment {
                 mScore.setLayoutParams(params);
             }
             mInfo.setText("Last played: " + DateFormatting.dateToMonthNameAndDay(mSong.getLastPlayed()));
+
             mProgressBar.setProgress(mSong.getScore());
-            int progressColor = getResources().getColor(R.color.state_not_learned, getContext().getTheme());
-            switch (mSong.getState()){
-                case 0:
-                    progressColor = getResources().getColor(R.color.state_not_learned, getContext().getTheme());
-                    break;
-                case 1:
-                    progressColor = getResources().getColor(R.color.state_learning, getContext().getTheme());
-                    break;
-                case 2:
-                    progressColor = getResources().getColor(R.color.state_to_relearn, getContext().getTheme());
-                    break;
-                case 3:
-                    progressColor = getResources().getColor(R.color.state_learned, getContext().getTheme());
-                    break;
-            }
+            int progressColor = ColorFormatting.getStateColor(mSong.getState(), getContext());
             mProgressBar.getProgressDrawable().setColorFilter(progressColor, PorterDuff.Mode.SRC_IN);
 
-            switch (mSong.getDifficulty()) {
-                case 0:
-                    mDifficultyIndicator.setBackgroundColor(getResources().getColor(R.color.difficulty_very_easy, getContext().getTheme()));
-                    break;
-                case 1:
-                    mDifficultyIndicator.setBackgroundColor(getResources().getColor(R.color.difficulty_easy, getContext().getTheme()));
-                    break;
-                case 2:
-                    mDifficultyIndicator.setBackgroundColor(getResources().getColor(R.color.difficulty_medium, getContext().getTheme()));
-                    break;
-                case 3:
-                    mDifficultyIndicator.setBackgroundColor(getResources().getColor(R.color.difficulty_hard, getContext().getTheme()));
-                    break;
-                case 4:
-                    mDifficultyIndicator.setBackgroundColor(getResources().getColor(R.color.difficulty_very_hard, getContext().getTheme()));
-                    break;
-            }
+            mDifficultyIndicator.setBackgroundColor(ColorFormatting.getDifficultyColor(mSong.getDifficulty(), getContext()));
+
         }
 
         @Override
@@ -180,34 +153,6 @@ public class SongListFragment extends Fragment {
 
     public void updateUI() {
         SongManager manager = SongManager.get(getActivity());
-
-//        List<Song> songs = new ArrayList<>();
-//        Song song1 = new Song();
-//        Song song2 = new Song();
-//        song1.setTitle("One song");
-//        song1.setState(0);
-//        song1.setCountPlayed(5);
-//        song1.setSecondsPlayed(4802);
-//        song1.setDifficulty(0);
-//        song1.setScore(98);
-//        song1.setLastPlayed(new Date());
-//        song1.setVideoId("xorgzasdas");
-//        song1.setOrderId(0);
-//        songs.add(song1);
-//        song2.setTitle("good two songs");
-//        song2.setState(2);
-//        song2.setCountPlayed(76);
-//        song2.setSecondsPlayed(99765);
-//        song2.setDifficulty(2);
-//        song2.setScore(50);
-//        song2.setLastPlayed(new Date());
-//        song2.setVideoId("gjhjsdas");
-//        song2.setOrderId(1);
-//        songs.add(song2);
-//
-//        SongManager.get(getActivity()).addSong(song1);
-//        SongManager.get(getActivity()).addSong(song2);
-
         List<Song> songs = manager.getSongs();
 
         if (mAdapter == null) {
