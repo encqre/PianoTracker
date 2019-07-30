@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/list_toolbar_filter"
+        android:title="Filter"
+        android:icon="@drawable/toolbar_filter"
+        android:iconTint="@color/white"
+        app:showAsAction="withText|always" />
+    <item
+        android:id="@+id/list_toolbar_sort"
+        android:title="Sort"
+        android:icon="@drawable/toolbar_sort"
+        android:iconTint="@color/white"
+        app:showAsAction="withText|always" />
+    <item
+        android:id="@+id/list_toolbar_add"
+        android:title="Add new song"
+        android:icon="@drawable/toolbar_add"
+        android:iconTint="@color/white"
+        app:showAsAction="ifRoom"
+        />
+</menu>

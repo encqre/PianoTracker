@@ -94,14 +94,14 @@ public class SongDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("hey dude", "onPause happened for " + mSong.getTitle());
+//        Log.d("hey dude", "onPause happened for " + mSong.getTitle());
     }
 
 
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d("hey dude", "onDetach happened for " + mSong.getTitle());
+//        Log.d("hey dude", "onDetach happened for " + mSong.getTitle());
         mCallbacks = null;
     }
 
@@ -294,7 +294,7 @@ public class SongDetailFragment extends Fragment {
         lpSpannable.setSpan(new ForegroundColorSpan(lpColor), lpText1.length(), (lpText1 + lpText2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         mLastPlayed.setText(lpSpannable, TextView.BufferType.SPANNABLE);
 
-        mChronometer.setText(String.valueOf(mSong.getScore()));
+        mScore.setText(String.valueOf(mSong.getScore()));
         if (mSong.getSecondsPlayed() <= 59) {
             mChronometer.setText(String.valueOf(mSong.getSecondsPlayed()) + " s");
         } else if (mSong.getSecondsPlayed() <= 3599) {

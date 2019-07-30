@@ -1,19 +1,27 @@
 package com.untrustworthypillars.pianotracker;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -22,6 +30,8 @@ import com.untrustworthypillars.pianotracker.formatting.ColorFormatting;
 import java.util.List;
 
 public class SongListFragment extends Fragment {
+
+    private static final int REQUEST_ADD_SONG = 0;
 
     private RecyclerView mSongRecyclerView;
     private SongAdapter mAdapter;
@@ -140,6 +150,37 @@ public class SongListFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.list_toolbar, menu);
+        MenuItem filterItem = menu.findItem(R.id.list_toolbar_filter);
+        MenuItem sortItem = menu.findItem(R.id.list_toolbar_sort);
+        MenuItem addItem = menu.findItem(R.id.list_toolbar_add);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.list_toolbar_filter:
+                //TODO
+                return true;
+            case R.id.list_toolbar_sort:
+                //TODO
+                return true;
+            case R.id.list_toolbar_add:
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                AddSongDialog dialog = AddSongDialog.newInstance();
+                dialog.setTargetFragment(this, REQUEST_ADD_SONG);
+                dialog.show(fm, "AddSongDialog");
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         updateUI();
@@ -149,6 +190,13 @@ public class SongListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mCallbacks = null;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ADD_SONG) {
+            updateUI();
+        }
     }
 
     public void updateUI() {
