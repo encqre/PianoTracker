@@ -180,17 +180,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/detail_count_text" />
 
-    <TextView
+    <Chronometer
         android:id="@+id/detail_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="2h 12min"
-        android:textColor="@color/white"
         android:textSize="20sp"
+        tools:text="2 h 12 min 12 s"
+        android:textColor="@color/white"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/detail_time_text" />
+        app:layout_constraintTop_toBottomOf="@+id/detail_time_text"/>
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/detail_fab_add_count"

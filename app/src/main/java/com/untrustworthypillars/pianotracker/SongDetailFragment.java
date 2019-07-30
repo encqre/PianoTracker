@@ -1,12 +1,9 @@
 package com.untrustworthypillars.pianotracker;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -14,6 +11,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.os.SystemClock;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -25,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -36,9 +35,9 @@ import java.util.UUID;
 import com.untrustworthypillars.pianotracker.formatting.DateFormatting;
 import com.untrustworthypillars.pianotracker.formatting.ColorFormatting;
 
-import org.w3c.dom.Text;
-
 public class SongDetailFragment extends Fragment {
+
+    //TODO on page swap need to stop timer and save the new seconds value. Probably need to get to activity's onPageChange method
 
     private static final String ARG_SONG_ID = "song_id";
 
@@ -59,7 +58,7 @@ public class SongDetailFragment extends Fragment {
     private Button mDecreaseScore;
     private Button mIncreaseScore;
     private EditText mScore;
-    private TextView mTimePlayed;
+    private Chronometer mChronometer;
     private TextView mCountPlayed;
     private FloatingActionButton mAddCountFAB;
     private FloatingActionButton mRecordFAB;
@@ -95,13 +94,14 @@ public class SongDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-//        SongManager.get(getActivity()).updateSong(mSong);
+        Log.d("hey dude", "onPause happened for " + mSong.getTitle());
     }
 
 
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.d("hey dude", "onDetach happened for " + mSong.getTitle());
         mCallbacks = null;
     }
 
@@ -148,7 +148,23 @@ public class SongDetailFragment extends Fragment {
         });
 
         mScore = (EditText) v.findViewById(R.id.detail_score);
-        mTimePlayed = (TextView) v.findViewById(R.id.detail_time);
+        mChronometer = (Chronometer) v.findViewById(R.id.detail_time);
+        mChronometer.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
+            public void onChronometerTick(Chronometer cArg) {
+                long totalSeconds = (SystemClock.elapsedRealtime() - cArg.getBase())/1000;
+                int h = (int)(totalSeconds /3600);
+                int m = (int)(totalSeconds - h*3600)/60;
+                int s = (int)(totalSeconds - h*3600- m*60);
+                if (totalSeconds <= 59) {
+                    cArg.setText(s + " s");
+                } else if (totalSeconds <= 3599) {
+                    cArg.setText(m + " min " + s + " s");
+                } else {
+                    cArg.setText(h + " h " + m + " min " + s + " s");
+                }
+            }
+        });
+
         mCountPlayed = (TextView) v.findViewById(R.id.detail_count);
 
         mAddCountFAB = (FloatingActionButton) v.findViewById(R.id.detail_fab_add_count);
@@ -168,11 +184,19 @@ public class SongDetailFragment extends Fragment {
         mRecordFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO
                 if (mRecordFAB.getCompatElevation() == 18f) {
+                    //set the Chronometer to start at current played time and start it
+                    long milisPlayed = mSong.getSecondsPlayed() * 1000;
+                    mChronometer.setBase(SystemClock.elapsedRealtime() - milisPlayed);
+                    mChronometer.start();
                     mRecordFAB.setImageDrawable(getResources().getDrawable(R.drawable.stop_red_square, getContext().getTheme()));
                     mRecordFAB.setCompatElevation(19f);
                 } else if (mRecordFAB.getCompatElevation() == 19f) {
+                    //stop the chronometer, save the new total seconds played value
+                    mChronometer.stop();
+                    long newSeconds = (SystemClock.elapsedRealtime() - mChronometer.getBase()) / 1000;
+                    mSong.setSecondsPlayed(newSeconds);
+                    SongManager.get(getActivity()).updateSong(mSong);
                     mRecordFAB.setImageDrawable(getResources().getDrawable(R.drawable.play_sign, getContext().getTheme()));
                     mRecordFAB.setCompatElevation(18f);
                 }
@@ -209,6 +233,7 @@ public class SongDetailFragment extends Fragment {
                 EditSongDialog editDialog = EditSongDialog.newInstance(this.mSong.getSongId());
                 editDialog.setTargetFragment(this, REQUEST_EDIT_SONG);
                 editDialog.show(fmg, "EditSongDialog");
+                return true;
             case R.id.pager_toolbar_delete:
                 AlertDialog deleteDialog = new AlertDialog.Builder(getActivity()).setTitle("Delete this?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -225,6 +250,7 @@ public class SongDetailFragment extends Fragment {
                         })
                         .create();
                 deleteDialog.show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -268,18 +294,18 @@ public class SongDetailFragment extends Fragment {
         lpSpannable.setSpan(new ForegroundColorSpan(lpColor), lpText1.length(), (lpText1 + lpText2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         mLastPlayed.setText(lpSpannable, TextView.BufferType.SPANNABLE);
 
-        mScore.setText(String.valueOf(mSong.getScore()));
+        mChronometer.setText(String.valueOf(mSong.getScore()));
         if (mSong.getSecondsPlayed() <= 59) {
-            mTimePlayed.setText(String.valueOf(mSong.getSecondsPlayed()) + " s");
+            mChronometer.setText(String.valueOf(mSong.getSecondsPlayed()) + " s");
         } else if (mSong.getSecondsPlayed() <= 3599) {
             long minutes = (mSong.getSecondsPlayed() / 60);
             long seconds = mSong.getSecondsPlayed() % 60;
-            mTimePlayed.setText(String.valueOf(minutes) + " min " + String.valueOf(seconds) + " s");
+            mChronometer.setText(String.valueOf(minutes) + " min " + String.valueOf(seconds) + " s");
         } else {
             long hours = (mSong.getSecondsPlayed()/3600);
             long minutes = (mSong.getSecondsPlayed() % 3600) / 60;
             long seconds = (mSong.getSecondsPlayed() % 3600) % 60;
-            mTimePlayed.setText(String.valueOf(hours) + " h " + String.valueOf(minutes) + " min " + String.valueOf(seconds) + " s");
+            mChronometer.setText(String.valueOf(hours) + " h " + String.valueOf(minutes) + " min " + String.valueOf(seconds) + " s");
         }
         mCountPlayed.setText(String.valueOf(mSong.getCountPlayed()));
 
