@@ -15,7 +15,7 @@
         app:showAsAction="withText|always" />
     <item
         android:id="@+id/list_toolbar_add"
-        android:title="Add new song"
+        android:title="Add New"
         android:icon="@drawable/toolbar_add"
         android:iconTint="@color/white"
         app:showAsAction="ifRoom"
