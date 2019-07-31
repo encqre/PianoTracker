@@ -9,7 +9,7 @@
         app:showAsAction="withText|always" />
     <item
         android:id="@+id/pager_toolbar_add"
-        android:title="Add new"
+        android:title="Add New"
         android:icon="@drawable/plus_sign"
         android:iconTint="@color/white"
         app:showAsAction="never"
