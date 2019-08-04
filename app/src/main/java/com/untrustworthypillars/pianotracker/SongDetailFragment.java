@@ -320,4 +320,16 @@ public class SongDetailFragment extends Fragment {
         }
     }
 
+    public void stopTimer() {
+        if (mRecordFAB.getCompatElevation() == 19f) {
+            //stop the chronometer, save the new total seconds played value
+            mChronometer.stop();
+            long newSeconds = (SystemClock.elapsedRealtime() - mChronometer.getBase()) / 1000;
+            mSong.setSecondsPlayed(newSeconds);
+            SongManager.get(getActivity()).updateSong(mSong);
+            mRecordFAB.setImageDrawable(getResources().getDrawable(R.drawable.play_sign, getContext().getTheme()));
+            mRecordFAB.setCompatElevation(18f);
+        }
+    }
+
 }

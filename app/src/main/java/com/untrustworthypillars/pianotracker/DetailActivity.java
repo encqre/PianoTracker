@@ -10,6 +10,8 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ViewGroup;
 
 import java.util.List;
 import java.util.UUID;
@@ -71,6 +73,24 @@ public class DetailActivity extends AppCompatActivity implements SongDetailFragm
                 break;
             }
         }
+
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                SongDetailFragment fragment = (SongDetailFragment) mViewPager.getAdapter().instantiateItem(mViewPager, position);
+                fragment.stopTimer(); //stopping the timer(and saving second count), if it's on, on swipe to next song
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     @Override
