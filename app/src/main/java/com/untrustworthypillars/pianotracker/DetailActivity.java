@@ -17,14 +17,20 @@ import java.util.UUID;
 public class DetailActivity extends AppCompatActivity implements SongDetailFragment.Callbacks {
 
     private static final String EXTRA_SONG_ID = "pianotracker.song_id";
+    private static final String EXTRA_FILTER_STATE_ID = "pianotracker.filter_state_id";
+    private static final String EXTRA_FILTER_DIFFICULTY_ID = "pianotracker.filter_difficulty_id";
+    private static final String EXTRA_SORT_ID = "pianotracker.sort_id";
 
     private ViewPager mViewPager;
     private List<Song> mSongs;
     private Toolbar mToolbar;
 
-    public static Intent newIntent(Context packageContext, UUID songId) {
+    public static Intent newIntent(Context packageContext, UUID songId, Integer stateFilter, Integer difficultyFilter, Integer sort) {
         Intent intent = new Intent(packageContext, DetailActivity.class);
         intent.putExtra(EXTRA_SONG_ID, songId);
+        intent.putExtra(EXTRA_FILTER_STATE_ID, stateFilter);
+        intent.putExtra(EXTRA_FILTER_DIFFICULTY_ID, difficultyFilter);
+        intent.putExtra(EXTRA_SORT_ID, sort);
 
         return intent;
     }
@@ -38,7 +44,12 @@ public class DetailActivity extends AppCompatActivity implements SongDetailFragm
 
         UUID songId = (UUID) getIntent().getSerializableExtra(EXTRA_SONG_ID);
 
-        mSongs = SongManager.get(this).getSongs();
+        Integer stateFilter = (Integer) getIntent().getSerializableExtra(EXTRA_FILTER_STATE_ID);
+        Integer difficultyFilter = (Integer) getIntent().getSerializableExtra(EXTRA_FILTER_DIFFICULTY_ID);
+        Integer sort = (Integer) getIntent().getSerializableExtra(EXTRA_SORT_ID);
+
+        setSongList(stateFilter, difficultyFilter, sort);
+
         FragmentManager fm = getSupportFragmentManager();
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm) {
 
@@ -64,6 +75,29 @@ public class DetailActivity extends AppCompatActivity implements SongDetailFragm
 
     @Override
     public void onSongUpdated(Song song) {
+
+    }
+
+    public void setSongList(Integer stateFilter, Integer difficultyFilter, Integer sort) {
+        if (stateFilter != null || difficultyFilter != null) {
+            mSongs = SongManager.get(this).getSongsFiltered(stateFilter, difficultyFilter);
+        } else {
+            mSongs = SongManager.get(this).getSongs();
+        }
+
+        if (sort != null) {
+            if (sort == R.id.list_toolbar_sort_score) {
+                mSongs = Song.sortByScore(mSongs);
+            } else if (sort == R.id.list_toolbar_sort_totaltime) {
+                mSongs = Song.sortByTotalTime(mSongs);
+            } else if (sort == R.id.list_toolbar_sort_totalcount) {
+                mSongs = Song.sortByTotalCount(mSongs);
+            } else {
+                mSongs = Song.sortByLastPlayed(mSongs);
+            }
+        } else {
+            mSongs = Song.sortByOrderId(mSongs);
+        }
 
     }
 }

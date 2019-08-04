@@ -1,6 +1,9 @@
 package com.untrustworthypillars.pianotracker;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class Song {
@@ -99,6 +102,86 @@ public class Song {
 
     public void setState(int state) {
         mState = state;
+    }
+
+    public static List<Song> sortByOrderId(List<Song> songs) {
+        Collections.sort(songs, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+                if (o1.getOrderId() > o2.getOrderId()) {
+                    return 1;
+                } else if (o1.getOrderId() < o2.getOrderId()) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        return songs;
+    }
+
+    public static List<Song> sortByScore(List<Song> songs) {
+        Collections.sort(songs, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+                if (o1.getScore() > o2.getScore()) {
+                    return -1;
+                } else if (o1.getScore() < o2.getScore()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        return songs;
+    }
+
+    public static List<Song> sortByLastPlayed(List<Song> songs) {
+        Collections.sort(songs, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+                if (o1.getLastPlayed().getTime() > o2.getLastPlayed().getTime()) {
+                    return 1;
+                } else if (o1.getLastPlayed().getTime() < o2.getLastPlayed().getTime()) {
+                    return -1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        return songs;
+    }
+
+    public static List<Song> sortByTotalTime(List<Song> songs) {
+        Collections.sort(songs, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+                if (o1.getSecondsPlayed() > o2.getSecondsPlayed()) {
+                    return -1;
+                } else if (o1.getSecondsPlayed() < o2.getSecondsPlayed()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        return songs;
+    }
+
+    public static List<Song> sortByTotalCount(List<Song> songs) {
+        Collections.sort(songs, new Comparator<Song>() {
+            @Override
+            public int compare(Song o1, Song o2) {
+                if (o1.getCountPlayed() > o2.getCountPlayed()) {
+                    return -1;
+                } else if (o1.getCountPlayed() < o2.getCountPlayed()) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            }
+        });
+        return songs;
     }
 
 }

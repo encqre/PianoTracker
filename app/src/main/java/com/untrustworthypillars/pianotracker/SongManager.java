@@ -3,6 +3,7 @@ package com.untrustworthypillars.pianotracker;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.CursorJoiner;
 import android.database.sqlite.SQLiteBindOrColumnIndexOutOfRangeException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
@@ -62,6 +63,36 @@ public class SongManager {
         } finally {
             cursor.close();
         }
+    }
+
+    public List<Song> getSongsFiltered(Integer state, Integer difficulty) {
+        List<Song> songs = new ArrayList<>();
+        SongCursorWrapper cursor;
+
+        //For some reason whereArgs don't really work with integer columns, so doing queries bit different
+        if (state != null && difficulty != null) {
+            cursor = querySongs(SongTable.Cols.STATE + " = " + state.toString() + " AND "
+                    + SongTable.Cols.DIFFICULTY + " = " + difficulty.toString(), null);
+        } else if (state != null) {
+            cursor = querySongs(SongTable.Cols.STATE + " = " + state.toString(), null);
+        } else if (difficulty != null) {
+            cursor = querySongs(SongTable.Cols.DIFFICULTY + " = " + difficulty.toString(), null);
+        } else {
+            cursor = querySongs(SongTable.Cols.STATE + " = ?", new String[]{"99999"}); //maybe fix to do something prettier
+        }
+
+        try {
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()) {
+                songs.add(cursor.getSong());
+                cursor.moveToNext();
+            }
+        } finally {
+                cursor.close();
+        }
+
+
+        return songs;
     }
 
     public void addSong(Song s) {

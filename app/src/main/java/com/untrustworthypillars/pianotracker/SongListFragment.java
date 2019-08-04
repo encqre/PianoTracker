@@ -1,16 +1,12 @@
 package com.untrustworthypillars.pianotracker;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -37,17 +33,21 @@ public class SongListFragment extends Fragment {
     private RecyclerView mSongRecyclerView;
     private SongAdapter mAdapter;
     private Callbacks mCallbacks;
+    private SongManager mSongManager;
+    private List<Song> mSongs;
     private boolean mFilterStateIsActive = false;
-    private int mFilterState = 0;
+    private int mFilterStateToolbarId = 0;
+    private Integer mFilterState = null;
     private boolean mFilterDifficultyIsActive = false;
-    private int mFilterDifficulty = 0;
+    private int mFilterDifficultyToolbarId = 0;
+    private Integer mFilterDifficulty = null;
     private boolean mSortIsActive = false;
-    private int mSort = 0;
+    private Integer mSort = null;
 
 
     // Required interface for hosting activities
     public interface Callbacks {
-        void onSongSelected(Song song);
+        void onSongSelected(Song song, Integer stateFilter, Integer difficultyFilter, Integer sort);
     }
 
     @Override
@@ -93,6 +93,9 @@ public class SongListFragment extends Fragment {
             } else if (mSong.getScore() < 10) {
                 params.leftMargin = 56;
                 mScore.setLayoutParams(params);
+            } else {
+                params.leftMargin = 39;
+                mScore.setLayoutParams(params);
             }
             mInfo.setText("Last played: " + DateFormatting.dateToMonthNameAndDay(mSong.getLastPlayed()));
 
@@ -106,18 +109,18 @@ public class SongListFragment extends Fragment {
 
         @Override
         public void onClick(View view) {
-            mCallbacks.onSongSelected(mSong);
+            mCallbacks.onSongSelected(mSong, mFilterState, mFilterDifficulty, mSort);
         } //TODO once filtering is done, need to pass the whole list or maybe parameters to query that specific list
 
     }
 
     private class SongAdapter extends RecyclerView.Adapter<SongHolder> {
 
-        private List<Song> mSongs;
+        private List<Song> mAdapterSongs;
 
 
         public SongAdapter(List<Song> songs) {
-            mSongs = songs;
+            mAdapterSongs = songs;
         }
 
 
@@ -129,18 +132,18 @@ public class SongListFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(SongHolder holder, int position) {
-            Song song = mSongs.get(position);
+            Song song = mAdapterSongs.get(position);
             holder.bind(song);
 
         }
 
         @Override
         public int getItemCount() {
-            return mSongs.size();
+            return mAdapterSongs.size();
         }
 
         public void setSongs(List<Song> songs) {
-            mSongs = songs;
+            mAdapterSongs = songs;
         }
     }
 
@@ -152,6 +155,7 @@ public class SongListFragment extends Fragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mSongRecyclerView.setLayoutManager(layoutManager);
 
+        mSongManager = SongManager.get(getActivity());
         updateUI();
 
         return view;
@@ -162,8 +166,6 @@ public class SongListFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.list_toolbar, menu);
         MenuItem filterItem = menu.findItem(R.id.list_toolbar_filter);
-//        Drawable filterIcon = filterItem.getIcon();
-//        filterIcon.setTint(getResources().getColor(R.color.difficulty_very_hard, getContext().getTheme()));
         MenuItem filterStateItem = menu.findItem(R.id.list_toolbar_filter_state);
         MenuItem sortItem = menu.findItem(R.id.list_toolbar_sort);
         MenuItem addItem = menu.findItem(R.id.list_toolbar_add);
@@ -175,90 +177,117 @@ public class SongListFragment extends Fragment {
         switch (item.getItemId()) {
             case R.id.list_toolbar_filter_state_0:
                 mFilterStateIsActive = true;
-                mFilterState = R.id.list_toolbar_filter_state_0;
+                mFilterStateToolbarId = R.id.list_toolbar_filter_state_0;
+                mFilterState = 0;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_state_1:
                 mFilterStateIsActive = true;
-                mFilterState = R.id.list_toolbar_filter_state_1;
+                mFilterStateToolbarId = R.id.list_toolbar_filter_state_1;
+                mFilterState = 1;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_state_2:
                 mFilterStateIsActive = true;
-                mFilterState = R.id.list_toolbar_filter_state_2;
+                mFilterStateToolbarId = R.id.list_toolbar_filter_state_2;
+                mFilterState = 2;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_state_3:
                 mFilterStateIsActive = true;
-                mFilterState = R.id.list_toolbar_filter_state_3;
+                mFilterStateToolbarId = R.id.list_toolbar_filter_state_3;
+                mFilterState = 3;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_difficulty_0:
                 mFilterDifficultyIsActive = true;
-                mFilterDifficulty = R.id.list_toolbar_filter_difficulty_0;
+                mFilterDifficultyToolbarId = R.id.list_toolbar_filter_difficulty_0;
+                mFilterDifficulty = 0;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_difficulty_1:
                 mFilterDifficultyIsActive = true;
-                mFilterDifficulty = R.id.list_toolbar_filter_difficulty_1;
+                mFilterDifficultyToolbarId = R.id.list_toolbar_filter_difficulty_1;
+                mFilterDifficulty = 1;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_difficulty_2:
                 mFilterDifficultyIsActive = true;
-                mFilterDifficulty = R.id.list_toolbar_filter_difficulty_2;
+                mFilterDifficultyToolbarId = R.id.list_toolbar_filter_difficulty_2;
+                mFilterDifficulty = 2;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_difficulty_3:
                 mFilterDifficultyIsActive = true;
-                mFilterDifficulty = R.id.list_toolbar_filter_difficulty_3;
+                mFilterDifficultyToolbarId = R.id.list_toolbar_filter_difficulty_3;
+                mFilterDifficulty = 3;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_difficulty_4:
                 mFilterDifficultyIsActive = true;
-                mFilterDifficulty = R.id.list_toolbar_filter_difficulty_4;
+                mFilterDifficultyToolbarId = R.id.list_toolbar_filter_difficulty_4;
+                mFilterDifficulty = 4;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_filter_default:
                 mFilterStateIsActive = false;
                 mFilterDifficultyIsActive = false;
                 getActivity().invalidateOptionsMenu();
+                mFilterState = null;
+                mFilterDifficulty = null;
+                updateUI();
                 return true;
             case R.id.list_toolbar_sort_lastplayed:
                 mSortIsActive = true;
                 mSort = R.id.list_toolbar_sort_lastplayed;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_sort_score:
                 mSortIsActive = true;
                 mSort = R.id.list_toolbar_sort_score;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_sort_totaltime:
                 mSortIsActive = true;
                 mSort = R.id.list_toolbar_sort_totaltime;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_sort_totalcount:
                 mSortIsActive = true;
                 mSort = R.id.list_toolbar_sort_totalcount;
                 item.setChecked(true);
                 getActivity().invalidateOptionsMenu();
+                updateUI();
                 return true;
             case R.id.list_toolbar_sort_default:
                 mSortIsActive = false;
                 getActivity().invalidateOptionsMenu();
+                mSort = null;
+                updateUI();
                 return true;
             case R.id.list_toolbar_add:
                 FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -286,11 +315,11 @@ public class SongListFragment extends Fragment {
         if (mFilterStateIsActive || mFilterDifficultyIsActive){
             filterIcon.setTint(getResources().getColor(R.color.difficulty_very_hard, getContext().getTheme()));
             if (mFilterStateIsActive){
-                MenuItem activeStateFilterItem = menu.findItem(mFilterState);
+                MenuItem activeStateFilterItem = menu.findItem(mFilterStateToolbarId);
                 activeStateFilterItem.setChecked(true);
             }
             if (mFilterDifficultyIsActive) {
-                MenuItem activeDifficultyFilterItem = menu.findItem(mFilterDifficulty);
+                MenuItem activeDifficultyFilterItem = menu.findItem(mFilterDifficultyToolbarId);
                 activeDifficultyFilterItem.setChecked(true);
             }
         } else {
@@ -332,15 +361,41 @@ public class SongListFragment extends Fragment {
         }
     }
 
+    /**Function will get a new song list with all currently applied filters/sorters*/
+    public void setSongList() {
+        if (mFilterDifficultyIsActive && mFilterStateIsActive) {
+            mSongs = mSongManager.getSongsFiltered(mFilterState, mFilterDifficulty);
+        } else if (mFilterStateIsActive) {
+            mSongs = mSongManager.getSongsFiltered(mFilterState, null);
+        } else if (mFilterDifficultyIsActive) {
+            mSongs = mSongManager.getSongsFiltered(null, mFilterDifficulty);
+        } else {
+            mSongs = mSongManager.getSongs();
+        }
+
+        if (mSortIsActive) {
+            if (mSort == R.id.list_toolbar_sort_score) {
+                mSongs = Song.sortByScore(mSongs);
+            } else if (mSort == R.id.list_toolbar_sort_totaltime) {
+                mSongs = Song.sortByTotalTime(mSongs);
+            } else if (mSort == R.id.list_toolbar_sort_totalcount) {
+                mSongs = Song.sortByTotalCount(mSongs);
+            } else {
+                mSongs = Song.sortByLastPlayed(mSongs);
+            }
+        } else {
+            mSongs = Song.sortByOrderId(mSongs);
+        }
+    }
+
     public void updateUI() {
-        SongManager manager = SongManager.get(getActivity());
-        List<Song> songs = manager.getSongs();
+        setSongList();
 
         if (mAdapter == null) {
-            mAdapter = new SongAdapter(songs);
+            mAdapter = new SongAdapter(mSongs);
             mSongRecyclerView.setAdapter(mAdapter);
         } else {
-            mAdapter.setSongs(songs);
+            mAdapter.setSongs(mSongs);
             mAdapter.notifyDataSetChanged();
         }
     }
