@@ -6,13 +6,89 @@
         android:title="Filter"
         android:icon="@drawable/toolbar_filter"
         android:iconTint="@color/white"
-        app:showAsAction="withText|always" />
+        app:showAsAction="withText|always" >
+        <menu>
+            <group
+                android:checkableBehavior="all">
+                <item
+                    android:id="@+id/list_toolbar_filter_state"
+                    android:title="Learning state">
+                    <menu>
+                        <group
+                            android:checkableBehavior="single">
+                            <item
+                                android:id="@+id/list_toolbar_filter_state_0"
+                                android:title="Not learned"/>
+                            <item
+                                android:id="@+id/list_toolbar_filter_state_1"
+                                android:title="Learning"/>
+                            <item
+                                android:id="@+id/list_toolbar_filter_state_2"
+                                android:title="Need To Re-learn"/>
+                            <item
+                                android:id="@+id/list_toolbar_filter_state_3"
+                                android:title="Learned"/>
+                        </group>
+                    </menu>
+                </item>
+                <item
+                    android:id="@+id/list_toolbar_filter_difficulty"
+                    android:title="Difficulty">
+                    <menu>
+                        <group
+                            android:checkableBehavior="single">
+                            <item
+                                android:id="@+id/list_toolbar_filter_difficulty_0"
+                                android:title="Very Easy"/>
+                            <item
+                                android:id="@+id/list_toolbar_filter_difficulty_1"
+                                android:title="Easy"/>
+                            <item
+                                android:id="@+id/list_toolbar_filter_difficulty_2"
+                                android:title="Medium"/>
+                            <item
+                                android:id="@+id/list_toolbar_filter_difficulty_3"
+                                android:title="Hard"/>
+                            <item
+                                android:id="@+id/list_toolbar_filter_difficulty_4"
+                                android:title="Very Hard"/>
+                        </group>
+                    </menu>
+                </item>
+            </group>
+            <item
+                android:id="@+id/list_toolbar_filter_default"
+                android:title="Clear filter"/>
+        </menu>
+    </item>
     <item
         android:id="@+id/list_toolbar_sort"
         android:title="Sort"
         android:icon="@drawable/toolbar_sort"
         android:iconTint="@color/white"
-        app:showAsAction="withText|always" />
+        app:showAsAction="withText|always">
+        <menu>
+            <group
+                android:checkableBehavior="single">
+                <item
+                    android:id="@+id/list_toolbar_sort_lastplayed"
+                    android:title="Last played"/>
+                <item
+                    android:id="@+id/list_toolbar_sort_score"
+                    android:title="Score"/>
+                <item
+                    android:id="@+id/list_toolbar_sort_totaltime"
+                    android:title="Total time"/>
+                <item
+                    android:id="@+id/list_toolbar_sort_totalcount"
+                    android:title="Total count"/>
+            </group>
+            <item
+                android:id="@+id/list_toolbar_sort_default"
+                android:title="Default order"/>
+
+        </menu>
+    </item>
     <item
         android:id="@+id/list_toolbar_add"
         android:title="Add New"
