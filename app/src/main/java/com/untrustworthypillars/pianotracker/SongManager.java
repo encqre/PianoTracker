@@ -3,10 +3,7 @@ package com.untrustworthypillars.pianotracker;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorJoiner;
-import android.database.sqlite.SQLiteBindOrColumnIndexOutOfRangeException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.untrustworthypillars.pianotracker.database.DbSchema.SongTable;
 import com.untrustworthypillars.pianotracker.database.SongCursorWrapper;
@@ -103,9 +100,6 @@ public class SongManager {
     public void updateSong(Song song) {
         String songId = song.getSongId().toString();
         ContentValues values = getContentValues(song);
-        /////////////////////////////////////////////////
-        Log.d("Update Song Happened", values.toString());
-        /////////////////////////////////////////////////
         mSongDatabase.update(SongTable.NAME, values, SongTable.Cols.SONGID + " = ?", new String[] {songId});
     }
 

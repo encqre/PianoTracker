@@ -10,7 +10,6 @@ import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -33,10 +32,8 @@ public class AddSongDialog extends DialogFragment {
 
     public static AddSongDialog newInstance () {
         Bundle args = new Bundle();
-//        args.putSerializable(ARG_CATEGORY, category);
 
         AddSongDialog fragment = new AddSongDialog();
-//        fragment.setArguments(args);
         return fragment;
     }
 

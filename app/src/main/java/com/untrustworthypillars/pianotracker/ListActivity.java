@@ -3,8 +3,6 @@ package com.untrustworthypillars.pianotracker;
 import android.content.Intent;
 import androidx.fragment.app.Fragment;
 
-import java.util.List;
-
 public class ListActivity extends SingleFragmentActivity implements SongListFragment.Callbacks, SongDetailFragment.Callbacks {
 
     @Override

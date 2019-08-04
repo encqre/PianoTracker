@@ -1,8 +1,6 @@
 package com.untrustworthypillars.pianotracker.formatting;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
 
 import com.untrustworthypillars.pianotracker.R;
 

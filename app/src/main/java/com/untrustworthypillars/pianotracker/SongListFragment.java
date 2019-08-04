@@ -110,7 +110,7 @@ public class SongListFragment extends Fragment {
         @Override
         public void onClick(View view) {
             mCallbacks.onSongSelected(mSong, mFilterState, mFilterDifficulty, mSort);
-        } //TODO once filtering is done, need to pass the whole list or maybe parameters to query that specific list
+        }
 
     }
 

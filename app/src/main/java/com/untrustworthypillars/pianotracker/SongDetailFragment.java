@@ -15,7 +15,6 @@ import android.os.SystemClock;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,8 +35,6 @@ import com.untrustworthypillars.pianotracker.formatting.DateFormatting;
 import com.untrustworthypillars.pianotracker.formatting.ColorFormatting;
 
 public class SongDetailFragment extends Fragment {
-
-    //TODO on page swap need to stop timer and save the new seconds value. Probably need to get to activity's onPageChange method
 
     private static final String ARG_SONG_ID = "song_id";
 
@@ -94,14 +91,12 @@ public class SongDetailFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-//        Log.d("hey dude", "onPause happened for " + mSong.getTitle());
     }
 
 
     @Override
     public void onDetach() {
         super.onDetach();
-//        Log.d("hey dude", "onDetach happened for " + mSong.getTitle());
         mCallbacks = null;
     }
 

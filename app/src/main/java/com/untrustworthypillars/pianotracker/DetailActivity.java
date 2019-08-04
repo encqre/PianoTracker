@@ -3,15 +3,12 @@ package com.untrustworthypillars.pianotracker;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.ViewGroup;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +22,6 @@ public class DetailActivity extends AppCompatActivity implements SongDetailFragm
 
     private ViewPager mViewPager;
     private List<Song> mSongs;
-    private Toolbar mToolbar;
 
     public static Intent newIntent(Context packageContext, UUID songId, Integer stateFilter, Integer difficultyFilter, Integer sort) {
         Intent intent = new Intent(packageContext, DetailActivity.class);
