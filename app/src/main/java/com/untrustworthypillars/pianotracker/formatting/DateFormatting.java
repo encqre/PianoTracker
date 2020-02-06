@@ -5,8 +5,8 @@ import android.text.format.DateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class DateFormatting {
@@ -23,9 +23,7 @@ public class DateFormatting {
         LocalDate localdate = localDateTime.toLocalDate();
         LocalDate now = LocalDate.now();
 
-
-        Period period = Period.between(localdate, now);
-        int dayDiff = period.getDays();
+        long dayDiff = ChronoUnit.DAYS.between(localdate, now);
 
         if (dayDiff == 0) {
             deltaString = "Today (" + DateFormat.format("MMM d", date).toString() + ")";

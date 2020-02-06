@@ -168,7 +168,12 @@ public class SongDetailFragment extends Fragment {
             public void onClick(View v) {
                 int newCount = Integer.valueOf(mCountPlayed.getText().toString()) + 1;
                 mCountPlayed.setText(String.valueOf(newCount));
-                mLastPlayed.setText("Last played: " + DateFormatting.dateDeltaToNow(new Date()));
+                String lpText1 = "Last played: ";
+                String lpText2 = DateFormatting.dateDeltaToNow(new Date());
+                Spannable lpSpannable = new SpannableString(lpText1 + lpText2);
+                int lpColor = getResources().getColor(R.color.white, getContext().getTheme());
+                lpSpannable.setSpan(new ForegroundColorSpan(lpColor), lpText1.length(), (lpText1 + lpText2).length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                mLastPlayed.setText(lpSpannable, TextView.BufferType.SPANNABLE);
                 mSong.setCountPlayed(newCount);
                 mSong.setLastPlayed(new Date());
                 SongManager.get(getActivity()).updateSong(mSong);
